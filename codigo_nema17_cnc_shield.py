@@ -6,31 +6,8 @@
  CODIGO DE MOVIMENTACAO DE MESA DE IMPRESSORA 3D USANDO CNC SHIELD
  MOVIMENTOS NO EIXO X E Y NO INTERVALO DE 0 A 30 CM
  SENSORES DE PARADA NA POSICAO 0 E PERSISTENCIA DA POSICAO NA EEPROM
- 
- * VOCABULARY
- * a = axis:x , distance: 10
- * b = axis:x , distance: -10
- * c = axis:x , distance: 5
- * d = axis:x , distance: -5
- * e = axis:x , distance: 1
- * f = axis:x , distance: -1
 
- * g = axis:y , distance: 10
- * h = axis:y , distance: -10
- * i = axis:y , distance: 5
- * j = axis:y , distance: -5
- * k = axis:y , distance: 1
- * l = axis:y , distance: -1
-
-
- * m = axis:z , distance: 10
- * n = axis:z , distance: -10
- * o = axis:z , distance: 5
- * p = axis:z , distance: -5
- * q = axis:z , distance: 1
- *  r = axis:z , distance: -1
-
-**/
+ **/
 
 AccelStepper stepper1(1, 2 ,5);
 AccelStepper stepper2(1, 3 ,6);
@@ -75,6 +52,25 @@ void setup()
 
 char inBuffer = "";
 
+void stopX()
+{
+  stepper1.stop();
+  stepper1.setCurrentPosition(0);
+  stepper1.move(0);
+  positionX = 0;
+  EEPROM.write(e_AddressX, positionX);
+}
+
+
+void stopY()
+{
+  stepper2.stop();
+  stepper2.setCurrentPosition(0);
+  stepper2.move(0);
+  positionY = 0;
+  EEPROM.write(e_AddressY, positionY);
+}
+
 
 void loop()
 {
@@ -83,71 +79,213 @@ void loop()
     {
       inBuffer = Serial.read();
     }
-       
+
+     ////////////////////////////////////////////////////////////////////
+    //                      MOVIMENTOS NO EIXO X                      //
+   ////////////////////////////////////////////////////////////////////
+   /**
+   *        VOCABULARY
+   *        a = axis:x , distance: -10
+   *        b = axis:x , distance: 10
+   *        c = axis:x , distance: -5
+   *        d = axis:x , distance: 5
+   *        e = axis:x , distance: -1
+   *        f = axis:x , distance: 1
+   *        
+   **/
+   
     if (inBuffer == 'a')
     {
+      
       if(digitalRead(x_sensor) == 1)
       {
-        stepper1.stop();
-        stepper1.setCurrentPosition(0);
-        stepper1.move(0);
-        positionX = 0;
-        EEPROM.write(e_AddressX, positionX);
+        stopX();
       }
       else
       {
-        stepper1.move(-distancia_dez_centimetros);
-        positionX = positionX - 10;
-        EEPROM.write(e_AddressX, positionX);
+        if(positionX >= 10)
+        {
+          stepper1.move(-distancia_dez_centimetros);
+          positionX = positionX - 10;
+          EEPROM.write(e_AddressX, positionX);
+        }
       }
-   
     }
-   
-   
-    if (inBuffer == 'd')
+
+    if (inBuffer == 'b')
     {  
        if(positionX < 30)
        {
            stepper1.move(distancia_dez_centimetros);
            positionX = positionX + 10;
            EEPROM.write(e_AddressX, positionX);
-       }
-       
+       } 
     }
 
-    if (inBuffer == 'w')
-    {    
-       if(positionY < 30)
-       {
-          stepper2.move(distancia_dez_centimetros);
-          positionY = positionY + 10;
-          EEPROM.write(e_AddressY, positionY);
-       }
-       
-    }
-
-    if (inBuffer == 's')
-    {    
-       if(digitalRead(y_sensor) == 1)
+    if (inBuffer == 'c')
+    {
+      
+      if(digitalRead(x_sensor) == 1)
       {
-        stepper2.stop();
-        stepper2.setCurrentPosition(0);
-        stepper2.move(0);
-        positionY = 0;
-        EEPROM.write(e_AddressY, positionY);
+        stopX();
       }
       else
       {
-        stepper2.move(-distancia_dez_centimetros);
-        positionY = positionY - 10;
-        EEPROM.write(e_AddressY, positionY);
+        if(positionX >= 5)
+        {
+          stepper1.move(-distancia_cinco_centimetros);
+          positionX = positionX - 5;
+          EEPROM.write(e_AddressX, positionX); 
+        } 
       }
     }
+
+    if (inBuffer == 'd')
+    {  
+       if(positionX < 30)
+       {
+           stepper1.move(distancia_cinco_centimetros);
+           positionX = positionX + 5;
+           EEPROM.write(e_AddressX, positionX);
+       } 
+    }
+
+    if (inBuffer == 'e')
+    {
+      
+      if(digitalRead(x_sensor) == 1)
+      {
+        stopX();
+      }
+      else
+      {
+        if(positionX >= 1)
+        {
+          stepper1.move(-distancia_um_centimetro);
+          positionX = positionX - 1;
+          EEPROM.write(e_AddressX, positionX);
+        }  
+      }
+    }
+
+    if (inBuffer == 'f')
+    {  
+       if(positionX < 30)
+       {
+           stepper1.move(distancia_um_centimetro);
+           positionX = positionX + 1;
+           EEPROM.write(e_AddressX, positionX);
+       } 
+    }
+
+  
+     ////////////////////////////////////////////////////////////////////
+    //                      MOVIMENTOS NO EIXO Y                      //
+    ///////////////////////////////////////////////////////////////////
+    /**
+     *        VOCABULARY
+     *        g = axis:y , distance: -10
+     *        h = axis:y , distance: 10
+     *        i = axis:y , distance: -5
+     *        j = axis:y , distance: 5
+     *        k = axis:y , distance: -1
+     *        l = axis:x , distance: 1
+     *        
+     **/
+    
+    if (inBuffer == 'g')
+    {
+      
+      if(digitalRead(y_sensor) == 1)
+      {
+        stopY();
+      }
+      else
+      {
+        if(positionY >= 10)
+        {
+          stepper2.move(-distancia_dez_centimetros);
+          positionY = positionY - 10;
+          EEPROM.write(e_AddressY, positionY);
+        }
+      }
+    }
+
+    if (inBuffer == 'h')
+    {  
+       if(positionY < 30)
+       {
+           stepper2.move(distancia_dez_centimetros);
+           positionY = positionY + 10;
+           EEPROM.write(e_AddressY, positionY);
+       } 
+    }
+
+    if (inBuffer == 'i')
+    {
+      
+      if(digitalRead(y_sensor) == 1)
+      {
+        stopY();
+      }
+      else
+      {
+        if(positionY >= 5)
+        {
+          stepper2.move(-distancia_cinco_centimetros);
+          positionY = positionY - 5;
+          EEPROM.write(e_AddressY, positionY); 
+        } 
+      }
+    }
+
+    if (inBuffer == 'j')
+    {  
+       if(positionY < 30)
+       {
+           stepper2.move(distancia_cinco_centimetros);
+           positionY = positionY + 5;
+           EEPROM.write(e_AddressY, positionY);
+       } 
+    }
+
+    if (inBuffer == 'k')
+    {
+      
+      if(digitalRead(y_sensor) == 1)
+      {
+        stopY();
+      }
+      else
+      {
+        if(positionY >= 1)
+        {
+          stepper2.move(-distancia_um_centimetro);
+          positionY = positionY - 1;
+          EEPROM.write(e_AddressY, positionY);
+        }  
+      }
+    }
+
+    if (inBuffer == 'l')
+    {  
+       if(positionY < 30)
+       {
+           stepper2.move(distancia_um_centimetro);
+           positionY = positionY + 1;
+           EEPROM.write(e_AddressY, positionY);
+       } 
+    }
+
+    
+
+    // CONTROL RUN
 
      if(inBuffer == 'a' && positionX == 0 )
      {
           
-     }else
+     }
+     else
      {
        stepper1.run();
      }
@@ -155,7 +293,8 @@ void loop()
      if(inBuffer == 's' && positionY == 0 )
      {
           
-     }else
+     }
+     else
      {
        stepper2.run();
      }
